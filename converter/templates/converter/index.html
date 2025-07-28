@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Конвертер валют на Django</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            margin-top: 50px;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 24px;
+        }
+
+        label {
+            font-size: 0.95rem;
+            color: #444;
+            margin-top: 12px;
+            display: block;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result, .error {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .result {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .error {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Конвертер валют</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <label for="amount">Сумма:</label>
+            <input type="text" name="amount" id="amount" required />
+
+            <label for="from_currency">Из валюты:</label>
+            <select name="from_currency" id="from_currency" required>
+                {% for cur in currencies %}
+                <option value="{{ cur }}">{{ cur }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="to_currency">В валюту:</label>
+            <select name="to_currency" id="to_currency" required>
+                {% for cur in currencies %}
+                <option value="{{ cur }}">{{ cur }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Конвертировать</button>
+        </form>
+
+        {% if result %}
+        <div class="result">{{ result }}</div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>
