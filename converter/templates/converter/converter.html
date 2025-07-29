@@ -137,7 +137,6 @@
         <label for="commission">Комиссия (%)</label>
         <input type="text" id="commission" name="commission" value="{{ request.POST.commission|default:'0' }}" />
 
-
         <button type="submit">Конвертировать</button>
     </form>
 
@@ -156,13 +155,3 @@
     {% endif %}
 </body>
 </html>
-
-
-
-from django.urls import path
-from . import views 
-
-urlpatterns = [
-    path('', views.currency_converter, name='currency_converter'),
-]
-
