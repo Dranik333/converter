@@ -5,7 +5,6 @@ import requests
 
 API_KEY = '22a140aff796a3b025850c5a'  # твой ключ exchangerate-api.com
 
-# Словарь с русскими краткими названиями валют
 RUSSIAN_CURRENCY_NAMES = {
     'USD': 'Доллар',
     'EUR': 'Евро',
@@ -26,8 +25,9 @@ RUSSIAN_CURRENCY_NAMES = {
     'INR': 'Индийская рупия',
     'BRL': 'Бразильский реал',
     'ZAR': 'Южноафриканский ранд',
-    # Добавь остальные, которые хочешь
 }
+
+POPULAR_CURRENCIES = ['USD', 'EUR', 'RUB', 'GBP', 'JPY']  # популярные валюты для блока снизу
 
 @csrf_exempt
 def currency_converter(request):
@@ -42,9 +42,9 @@ def currency_converter(request):
         if not rates_updated:
             return False
         updated_time = datetime.strptime(rates_updated, '%Y-%m-%d %H:%M:%S')
-        return datetime.now() - updated_time < timedelta(minutes=10)  # кэш живёт 10 минут
+        return datetime.now() - updated_time < timedelta(minutes=10)
 
-    # Получаем список валют из API (кэшируем в сессии)
+    # Получаем список валют из API или из сессии
     if 'currencies_list' in request.session:
         currencies = request.session['currencies_list']
     else:
@@ -127,7 +127,7 @@ def currency_converter(request):
                              f"(курс: {rate:.4f}, комиссия: {commission}%)"
 
                     history.insert(0, {
-                        'datetime': datetime.now().strftime('%Y-%m-%d %H:%M'),
+                        'date': datetime.now().strftime('%Y-%m-%d %H:%M'),
                         'from': from_currency,
                         'to': to_currency,
                         'amount': amount,
@@ -140,25 +140,42 @@ def currency_converter(request):
                 else:
                     error = "Не удалось получить курс для выбранной валюты"
 
+    # Получаем курсы популярных валют по отношению к базовой (USD по умолчанию)
+    popular_rates = []
+    base_currency = 'USD'  # Можно сделать динамическим
+    try:
+        url = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/{base_currency}"
+        response = requests.get(url)
+        data = response.json()
+        if data['result'] == 'success':
+            rates = data['conversion_rates']
+            for code in POPULAR_CURRENCIES:
+                if code in rates:
+                    popular_rates.append({
+                        'code': code,
+                        'name': RUSSIAN_CURRENCY_NAMES.get(code, code),
+                        'rate': rates[code]
+                    })
+    except:
+        # Ошибка получения курсов — просто пропускаем
+        pass
+
     context = {
         'currencies': currencies,
         'result': result,
         'error': error,
         'history': history,
+        'popular_rates': popular_rates,
     }
 
-    return render(request, 'converter/converter.html', context)
+    return render(request, 'converter.html', context)
+
+
+def index(request):
+    return render(request, 'post_list.html')
 
 
 def about(request):
-    context = {
-        'title': 'О сайте',
-        'description': 'Этот сайт создан для удобного конвертирования валют с актуальными курсами. '
-                       'Здесь вы можете быстро и удобно конвертировать валюты с учётом комиссии и видеть историю последних операций.',
-    }
-    return render(request, 'converter/about.html', context)
-
-
-
+    return render(request, 'about.html')
 
 

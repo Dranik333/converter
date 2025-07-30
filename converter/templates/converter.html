@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Конвертер валют{% endblock %}
+
+{% block content %}
+  <h1>Конвертер валют</h1>
+
+  {% if error %}
+      <div class="error">{{ error }}</div>
+  {% endif %}
+
+  {% if result %}
+      <div class="result">{{ result }}</div>
+  {% endif %}
+
+  <form method="post" novalidate>
+      {% csrf_token %}
+      <label for="amount">Сумма</label>
+      <input type="text" id="amount" name="amount" value="{{ request.POST.amount|default_if_none:'' }}" required />
+
+      <label for="from_currency">Из валюты</label>
+      <select id="from_currency" name="from_currency" required>
+          {% for c in currencies %}
+              <option value="{{ c.code }}" {% if request.POST.from_currency == c.code %}selected{% endif %}>
+                  {{ c.code }} — {{ c.name }}
+              </option>
+          {% endfor %}
+      </select>
+
+      <label for="to_currency">В валюту</label>
+      <select id="to_currency" name="to_currency" required>
+          {% for c in currencies %}
+              <option value="{{ c.code }}" {% if request.POST.to_currency == c.code %}selected{% endif %}>
+                  {{ c.code }} — {{ c.name }}
+              </option>
+          {% endfor %}
+      </select>
+
+      <label for="commission">Комиссия (%)</label>
+      <input type="text" id="commission" name="commission" value="{{ request.POST.commission|default:'0' }}" />
+
+      <button type="submit">Конвертировать</button>
+  </form>
+
+  {% if history %}
+      <div class="history">
+          <h2>История последних 5 конвертаций</h2>
+          <ul>
+              {% for item in history %}
+                  <li>
+                      {{ item.date }}: {{ item.amount }} {{ item.from }} → {{ item.result }} {{ item.to }} 
+                      (курс: {{ item.rate|floatformat:4 }}, комиссия: {{ item.commission }}%)
+                  </li>
+              {% endfor %}
+          </ul>
+      </div>
+  {% endif %}
+
+  <!-- Новый блок с популярными валютами -->
+  {% if popular_currencies %}
+  <div class="popular-currencies" style="margin-top: 40px; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+    <h2 style="color: #28a745; margin-top: 0;">Популярные валюты и их курсы</h2>
+    <ul style="list-style: none; padding: 0; margin: 0; font-size: 16px; color: #444;">
+      {% for currency in popular_currencies %}
+        <li style="padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-weight: 600;">
+          <span>{{ currency.code }} — {{ currency.name }}</span>
+          <span>{{ currency.rate }} ₽</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+{% endblock %}

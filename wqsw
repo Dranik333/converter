@@ -1,168 +1,149 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <title>Конвертер валют</title>
-    <style>
-        body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            color: #333;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 24px;
-            color: #2c3e50;
-        }
-        form {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            font-weight: 600;
-        }
-        input[type="text"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 8px 10px;
-            margin-top: 6px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        button {
-            margin-top: 20px;
-            background-color: #3498db;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            width: 100%;
-            font-size: 18px;
-            padding: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 6px;
-            color: #155724;
-            font-weight: 600;
-        }
-        .error {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            border-radius: 6px;
-            color: #721c24;
-            font-weight: 600;
-        }
-        .history {
-            margin-top: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        }
-        .history h2 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: #34495e;
-        }
-        .history ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .history li {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-            font-size: 14px;
-        }
-        .history li:last-child {
-            border-bottom: none;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Мой сайт{% endblock %}</title>
+  <style>
+    /* Общие стили */
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 20px 40px;
+      box-sizing: border-box;
+    }
+    header {
+      background-color: #28a745; /* зелёный цвет */
+      color: white;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 0 0 8px 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      margin-left: 15px;
+      font-size: 18px;
+      transition: text-decoration 0.3s ease;
+    }
+    nav a:hover,
+    nav a:focus {
+      text-decoration: underline;
+    }
+    main {
+      background: white;
+      padding: 20px 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      min-height: 300px;
+    }
+
+    /* Конвертер специфичные стили */
+    form label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    form input[type="text"],
+    form select {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 6px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    form button {
+      margin-top: 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      width: 100%;
+      font-size: 18px;
+      padding: 12px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    form button:hover,
+    form button:focus {
+      background-color: #2980b9;
+    }
+    .result, .error {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+    .result {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+    .history {
+      margin-top: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .history h2 {
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #34495e;
+    }
+    .history ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .history li {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+    .history li:last-child {
+      border-bottom: none;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <h1>Конвертер валют</h1>
-
-    {% if error %}
-        <div class="error">{{ error }}</div>
-    {% endif %}
-
-    {% if result %}
-        <div class="result">{{ result }}</div>
-    {% endif %}
-
-    <form method="post" novalidate>
-        {% csrf_token %}
-        <label for="amount">Сумма</label>
-        <input type="text" id="amount" name="amount" value="{{ request.POST.amount|default_if_none:'' }}" required />
-
-        <label for="from_currency">Из валюты</label>
-        <select id="from_currency" name="from_currency" required>
-            {% for c in currencies %}
-                <option value="{{ c.code }}" {% if request.POST.from_currency == c.code %}selected{% endif %}>
-                    {{ c.code }} — {{ c.name }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <label for="to_currency">В валюту</label>
-        <select id="to_currency" name="to_currency" required>
-            {% for c in currencies %}
-                <option value="{{ c.code }}" {% if request.POST.to_currency == c.code %}selected{% endif %}>
-                    {{ c.code }} — {{ c.name }}
-                </option>
-            {% endfor %}
-        </select>
-
-        <label for="commission">Комиссия (%)</label>
-        <input type="text" id="commission" name="commission" value="{{ request.POST.commission|default:'0' }}" />
-
-
-        <button type="submit">Конвертировать</button>
-    </form>
-
-    {% if history %}
-        <div class="history">
-            <h2>История последних 5 конвертаций</h2>
-            <ul>
-                {% for item in history %}
-                    <li>
-                        {{ item.date }}: {{ item.amount }} {{ item.from }} → {{ item.result }} {{ item.to }} 
-                        (курс: {{ item.rate|floatformat:4 }}, комиссия: {{ item.commission }}%)
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    {% endif %}
+  <header>
+    <h1>💵💴 Мой сайт 💶💷</h1>
+    <nav>
+      <a href="{% url 'index' %}">Главная</a>
+      <a href="{% url 'currency_converter' %}">Конвертер</a>
+      <a href="{% url 'about' %}">О проекте</a>
+    </nav>
+  </header>
+  <main>
+    {% block content %}
+    <!-- Здесь будет контент страницы -->
+    {% endblock %}
+  </main>
 </body>
 </html>
-
-
-
-from django.urls import path
-from . import views 
-
-urlpatterns = [
-    path('', views.currency_converter, name='currency_converter'),
-]
-
